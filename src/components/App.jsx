@@ -22,13 +22,17 @@ const App = () => {
   const [largeImageURL, setLargeImageURL] = useState('');
   const [alt, setAlt] = useState('');
 
+
+
   useEffect(() => {
-    if (!imagesName || page > 1) {
+    if (!imagesName) {
       return;
     }
 
-    setStatus('pending');
-    setOpenButton(false);
+    if (page === 1) {
+      setStatus('pending');
+      setOpenButton(false);
+    }
 
     imagesAPI
       .fetchImages(imagesName, 12, page)
@@ -39,34 +43,27 @@ const App = () => {
           return;
         }
 
-        setImages([...images.hits]);
-        setOpenButton(true);
-        setStatus('resolved');
-        setTotalHits(images.totalHits);
+        if (page === 1) {
+          setImages([...images.hits]);
+          setOpenButton(true);
+          setStatus('resolved');
+          setTotalHits(images.totalHits);
+          return;
+        }
+
+        if (page > 1) {
+          setImages(prevImages => [...prevImages, ...images.hits]);
+          setStatus('resolved');
+          setOpenButton(true);
+          setLoading(false);
+          return;
+        }
       })
       .catch(error => {
         setError(error);
         setStatus('rejected');
       });
-  }, [imagesName, page]);
-
-  useEffect(() => {
-    if (page === 1) {
-      return;
-    }
-
-    imagesAPI
-      .fetchImages(imagesName, 12, page)
-      .then(images => {
-        setImages(prevImages => [...prevImages, ...images.hits]);
-        setStatus('resolved');
-        setOpenButton(true);
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error);
-        setStatus('rejected');
-      });
+    
   }, [imagesName, page]);
 
   const handleFormSubmit = imagesName => {
