@@ -12,10 +12,9 @@ const Modal = ({ onClose, children }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  });
 
   const handleKeyDown = e => {
-    console.log(e.code);
     if (e.code === 'Escape') {
       onClose();
     }
