@@ -44,7 +44,6 @@ const App = () => {
         }
 
         if (page === 1) {
-          console.log(images.hits);
           setImages([...images.hits]);
           setOpenButton(true);
           setStatus('resolved');
