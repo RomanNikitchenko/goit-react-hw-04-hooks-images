@@ -13,6 +13,7 @@ const App = () => {
   const [images, setImages] = useState([]);
   const [imagesName, setImagesName] = useState('');
   const [page, setPage] = useState(1);
+  const [limit] = useState(12);
   const [openButton, setOpenButton] = useState(false);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
@@ -21,7 +22,6 @@ const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [largeImageURL, setLargeImageURL] = useState('');
   const [alt, setAlt] = useState('');
-
 
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const App = () => {
     }
 
     imagesAPI
-      .fetchImages(imagesName, 12, page)
+      .fetchImages(imagesName, limit, page)
       .then(images => {
         if (!images.hits.length) {
           setOpenButton(false);
@@ -44,6 +44,7 @@ const App = () => {
         }
 
         if (page === 1) {
+          console.log(images.hits);
           setImages([...images.hits]);
           setOpenButton(true);
           setStatus('resolved');
@@ -64,7 +65,7 @@ const App = () => {
         setStatus('rejected');
       });
     
-  }, [imagesName, page]);
+  }, [imagesName, page, limit]);
 
   const handleFormSubmit = imagesName => {
     setImagesName(imagesName);
@@ -91,8 +92,8 @@ const App = () => {
       {status === 'rejected' && <h1>{error.massage}</h1>}
       {status === 'resolved' && (
         <ImageGallery>
-          {images.map(({ webformatURL, tags, largeImageURL }, index) => (
-            <ImageGalleryItem key={index}>
+          {images.map(({id, webformatURL, tags, largeImageURL }) => (
+            <ImageGalleryItem key={id}>
               <ImagesItem
                 webformatURL={webformatURL}
                 tags={tags}
